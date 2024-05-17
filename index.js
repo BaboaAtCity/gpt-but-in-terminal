@@ -7,7 +7,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function question(msg) {
+async function question(msg, model_name) {
   const completion = await openai.chat.completions.create({
     messages: [{
         role: "system",
@@ -19,7 +19,7 @@ async function question(msg) {
       }
     ],
     max_tokens: 60,
-    model: "gpt-3.5-turbo",
+    model: model_name,
   });
   const response = completion.choices[0].message.content;
   return response;
@@ -56,7 +56,7 @@ async function prompt() {
 }
 async function main() {
   const answers = await prompt();
-  const gptResponse = await question(answers.message);
+  const gptResponse = await question(answers.message, answers.model_name);
   console.log(gptResponse);
 }
 
