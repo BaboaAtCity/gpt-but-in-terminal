@@ -1,6 +1,8 @@
 const OpenAI = require("openai");
 const dotenv = require("dotenv");
 const inquirer = require('inquirer');
+const readline = require('readline');
+
 
 dotenv.config();
 const openai = new OpenAI({
@@ -55,9 +57,26 @@ async function prompt() {
   return userAnswers;
 }
 async function main() {
-  const answers = await prompt();
-  const gptResponse = await question(answers.message, answers.model_name);
-  console.log(gptResponse);
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  function onKeyPress(key) {
+    if (key.name === 'escape') {
+      console.log('Exiting...');
+      rl.close();
+      process.exit();
+    }
+  }
+
+  rl.input.on('keypress', onKeyPress);
+
+  while (true) {
+    const answers = await prompt();
+    const gptResponse = await question(answers.message, answers.model_name);
+    console.log(gptResponse);
+  }
 }
 
 main();
