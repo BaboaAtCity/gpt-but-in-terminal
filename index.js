@@ -50,7 +50,7 @@ async function messagePrompt() {
 }
 
 async function modelPrompt() {
-  const models = ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o"];
+  const models = ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o","gpt-4o-mini"];
 
   const model = await inquirer
     .prompt([{
@@ -73,14 +73,14 @@ async function modelPrompt() {
   return model;
 }
 async function main() {
-  tokens = 0;
+  let tokens = 0;
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   });
 
-  function onKeyPress(key) {
-    if (key.name === 'escape') {
+  function onKeyPress(str, key) {
+    if (key && key.name === 'escape') {
       console.log('Exiting...');
       rl.close();
       process.exit();
@@ -88,13 +88,19 @@ async function main() {
   }
 
   rl.input.on('keypress', onKeyPress);
-  const modelObj = await modelPrompt();
-  while (true) {
-    const messageObj = await messagePrompt();
-    const gptResponse = await question(messageObj.message, modelObj.model_name);
-    console.log(chalk.blue(gptResponse));
-    tokens = tokens + 60
-    //console.log('tokens used estimate: ' + tokens)
+
+  try {
+    const modelObj = await modelPrompt();
+    while (true) {
+      const messageObj = await messagePrompt();
+      const gptResponse = await question(messageObj.message, modelObj.model_name);
+      console.log(chalk.blue(gptResponse));
+      tokens += 60;
+    }
+  } catch (error) {
+    console.error('An error occurred:', error);
+  } finally {
+    rl.close();
   }
 }
 
