@@ -33,7 +33,7 @@ async function messagePrompt() {
     .prompt([{
       name: "message",
       type: "input",
-      message: "Enter you message to GPT (Press ESC to quit)",
+      message: "Enter your message to GPT (Press ESC to quit)",
     }, ])
     .then((userMessage) => {
       return userMessage;
